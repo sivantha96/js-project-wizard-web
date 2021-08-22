@@ -1839,9 +1839,9 @@
     "pretty-format" "^27.0.0"
 
 "@types/json-schema@*", "@types/json-schema@^7.0.3", "@types/json-schema@^7.0.5", "@types/json-schema@^7.0.6":
-  "integrity" "sha512-cxWFQVseBm6O9Gbw1IWb8r6OS4OhSt3hPZLkFApLjM8TEXROBuQGLAH2i2gZpcXdLBIrpXuTDhH7Vbm1iXmNGA=="
-  "resolved" "https://registry.npmjs.org/@types/json-schema/-/json-schema-7.0.7.tgz"
-  "version" "7.0.7"
+  "integrity" "sha512-qcUXuemtEu+E5wZSJHNxUXeCZhAfXKQ41D+duX+VYPde7xyEVZci+/oXKJL13tnRs9lR2pr4fod59GT6/X1/yQ=="
+  "resolved" "https://registry.npmjs.org/@types/json-schema/-/json-schema-7.0.9.tgz"
+  "version" "7.0.9"
 
 "@types/json5@^0.0.29":
   "integrity" "sha1-7ihweulOEdK4J7y+UnC86n8+ce4="
@@ -10013,6 +10013,11 @@
   "integrity" "sha512-NKN5kMDylKuldxYLSUfrbo5Tuzh4hd+2E8NPPX02mZtn1VuREQToYe/ZdlJy+J3uCpfaiGF05e7B8W0iXbQHmg=="
   "resolved" "https://registry.npmjs.org/require-main-filename/-/require-main-filename-2.0.0.tgz"
   "version" "2.0.0"
+
+"require-text@^0.0.1":
+  "integrity" "sha1-zeej5EO3HBTh7A1c78/NQY3/1m4="
+  "resolved" "https://registry.npmjs.org/require-text/-/require-text-0.0.1.tgz"
+  "version" "0.0.1"
 
 "requires-port@^1.0.0":
   "integrity" "sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8="
