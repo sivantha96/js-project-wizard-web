@@ -5,7 +5,7 @@ function App() {
   return (
     <Router>
       <Switch>
-        <Route exact path="/" component={Home} />
+        <Route exact path="/js-project-wizard/" component={Home} />
       </Switch>
     </Router>
   );
