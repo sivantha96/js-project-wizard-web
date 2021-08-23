@@ -56,10 +56,14 @@ function Home() {
         element.download = `${tempFileName}.js`;
         document.body.appendChild(element);
         element.click();
+        setName('')
+        setAuthor('')
+        setDescription('')
         setLoading(false);
       })
       .catch((err) => {
-        console.log(err);
+        setLoading(false);
+        window.alert('Oops! Something went wrong. Please try again in a while.')
       });
   };
 
