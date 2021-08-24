@@ -19,10 +19,13 @@ function Home() {
   const [author, setAuthor] = useState('');
   const [description, setDescription] = useState('');
   const [isLoading, setLoading] = useState(false);
+  const [dbType, setDbType] = useState('none');
+  const [dbName, setDbName] = useState('');
 
   const [nameError, setNameError] = useState(false);
   const [authorError, setAuthorError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
+  const [dbNameError, setDbNameError] = useState(false);
 
   const [fileName, setFileName] = useState(null);
 
@@ -31,6 +34,7 @@ function Home() {
     setNameError(false);
     setAuthorError(false);
     setDescriptionError(false);
+    setDbNameError(false);
 
     if (!name) {
       setNameError(true);
@@ -41,13 +45,23 @@ function Home() {
     if (!description) {
       setDescriptionError(true);
     }
+    if (!dbName) {
+      setDbNameError(true);
+    }
 
-    if (nameError || authorError || descriptionError) {
+    if (nameError || authorError || descriptionError || dbNameError) {
       return null;
     }
 
     setLoading(true);
-    getExpressScriptFile(name, description, author)
+    const params = {
+      name,
+      description,
+      author,
+      dbType,
+      dbName,
+    };
+    getExpressScriptFile(params)
       .then((mainFile) => {
         const tempFileName = generateRandomId(6);
         setFileName(tempFileName);
@@ -56,18 +70,26 @@ function Home() {
         element.download = `${tempFileName}.js`;
         document.body.appendChild(element);
         element.click();
-        setName('')
-        setAuthor('')
-        setDescription('')
+        setName('');
+        setAuthor('');
+        setDescription('');
+        setDbType('none');
+        dbName('');
         setLoading(false);
       })
       .catch((err) => {
         setLoading(false);
-        window.alert('Oops! Something went wrong. Please try again in a while.')
+        window.alert(
+          'Oops! Something went wrong. Please try again in a while.'
+        );
       });
   };
 
   const projectTypes = [{ key: 'express', text: 'Express', value: 'express' }];
+  const dbTypes = [
+    { key: 'none', text: 'None', value: 'none' },
+    { key: 'mongo', text: 'MongoDB', value: 'mongo' },
+  ];
 
   return (
     <div className="container">
@@ -139,6 +161,35 @@ function Home() {
                   : false
               }
             />
+            <Form.Group widths="equal">
+              <Form.Select
+                fluid
+                label="Database"
+                options={dbTypes}
+                value={dbType}
+                onChange={(e, { value }) => {
+                  setDbType(value);
+                }}
+              />
+              <Form.Input
+                disabled={dbType === 'none'}
+                fluid
+                label="Database Name"
+                placeholder="express-app-db"
+                value={dbName}
+                onChange={(e, { value }) => {
+                  setDbName(value);
+                }}
+                error={
+                  dbNameError
+                    ? {
+                        content: 'Please enter the database name',
+                        pointing: 'above',
+                      }
+                    : false
+                }
+              />
+            </Form.Group>
             <Form.Button className="my-3" primary>
               Generate Project
             </Form.Button>

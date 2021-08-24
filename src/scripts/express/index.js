@@ -1,11 +1,10 @@
-const getExpressScriptFile = (
-  projectName,
-  projectDescription,
-  projectAuthor
-) => {
+import { addParamsToURL } from '../../utils';
+
+const getExpressScriptFile = (params) => {
   return new Promise((resolve, reject) => {
-    const url = `${process.env.REACT_APP_BASE_URL}/express?name=${projectName}&description=${projectDescription}&author=${projectAuthor}`;
-    fetch(encodeURI(url))
+    let url = `${process.env.REACT_APP_BASE_URL}/express`;
+    url = addParamsToURL(url, params);
+    fetch(url)
       .then((res) => {
         res.text().then((text) => {
           resolve(text);

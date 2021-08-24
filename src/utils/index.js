@@ -8,3 +8,17 @@ export const generateRandomId = (length) => {
   }
   return result;
 };
+
+export function addParamsToURL(url, params) {
+  if (params && Object.entries(params).length !== 0 && params.constructor === Object) {
+      let temp = url;
+      let count = 0;
+      for (let [key, value] of Object.entries(params)) {
+          const valEncoded = encodeURIComponent(value);
+          temp = temp + `${count === 0 ? '?' : '&'}${key}=${valEncoded}`;
+          count++;
+      }
+      return temp;
+  }
+  return url;
+}
