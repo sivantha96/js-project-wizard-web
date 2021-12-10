@@ -79,9 +79,6 @@ function Home() {
       })
       .catch((err) => {
         setLoading(false);
-        window.alert(
-          'Oops! Something went wrong. Please try again in a while.'
-        );
       });
   };
 
