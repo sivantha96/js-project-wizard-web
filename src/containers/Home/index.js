@@ -10,83 +10,112 @@ import {
   Icon,
   Popup,
 } from 'semantic-ui-react';
-import getExpressScriptFile from '../../scripts/express';
 import { generateRandomId } from '../../utils';
+import { PROJECT_TYPES, PROJECT_TYPES_ARRAY } from './constants';
+import ProjectDetailsView from './views/ProjectDetailsView';
+import ExpressView from './views/ExpressView';
+import RNView from './views/RNView';
+import { getExpressScriptFile, getRNScriptFile } from '../../services';
 
 function Home() {
-  const [type, setType] = useState('express');
-  const [name, setName] = useState('');
-  const [author, setAuthor] = useState('');
-  const [description, setDescription] = useState('');
+  const [type, setType] = useState(null);
   const [isLoading, setLoading] = useState(false);
-  const [dbType, setDbType] = useState('none');
-  const [dbName, setDbName] = useState('');
 
-  const [nameError, setNameError] = useState(false);
-  const [authorError, setAuthorError] = useState(false);
-  const [descriptionError, setDescriptionError] = useState(false);
-  const [dbNameError, setDbNameError] = useState(false);
+  const [projectDetails, setProjectDetails] = useState({
+    isValid: false,
+    name: '',
+    author: '',
+    description: '',
+  });
+
+  const [expressDetails, setExpressDetails] = useState({
+    isValid: false,
+    dataBaseType: 'none',
+    dataBaseName: '',
+  });
+
+  const [rnDetails, setRNDetails] = useState({
+    isValid: false,
+    hasReactNavigation: false,
+    hasRedux: false,
+  });
 
   const [fileName, setFileName] = useState(null);
 
   const buttonClickHandler = () => {
-    setFileName(null);
-    setNameError(false);
-    setAuthorError(false);
-    setDescriptionError(false);
-    setDbNameError(false);
-
-    if (!name) {
-      setNameError(true);
+    if (!projectDetails.isValid) {
+      return;
     }
-    if (!author) {
-      setAuthorError(true);
-    }
-    if (!description) {
-      setDescriptionError(true);
-    }
-    if (!dbName) {
-      setDbNameError(true);
-    }
-
-    if (nameError || authorError || descriptionError || dbNameError) {
-      return null;
-    }
-
     setLoading(true);
-    const params = {
-      name,
-      description,
-      author,
-      dbType,
-      dbName,
-    };
-    getExpressScriptFile(params)
-      .then((mainFile) => {
-        const tempFileName = generateRandomId(6);
-        setFileName(tempFileName);
-        const element = document.createElement('a');
-        element.href = window.URL.createObjectURL(new Blob([mainFile]));
-        element.download = `${tempFileName}.js`;
-        document.body.appendChild(element);
-        element.click();
-        setName('');
-        setAuthor('');
-        setDescription('');
-        setDbType('none');
-        dbName('');
+
+    let data;
+    switch (type) {
+      case PROJECT_TYPES.EXPRESS:
+        if (!expressDetails.isValid) {
+          return;
+        }
+
+        data = {
+          name: projectDetails.name,
+          author: projectDetails.author,
+          description: projectDetails.description,
+          dbType: expressDetails.dataBaseType,
+          dbName: expressDetails.dataBaseName,
+        };
+        getExpressScriptFile(data)
+          .then((mainFile) => {
+            downloadFile(mainFile);
+            setType(null);
+            setLoading(false);
+          })
+          .catch((err) => {
+            setLoading(false);
+          });
+        break;
+
+      case PROJECT_TYPES.REACT_NATIVE:
+        if (!rnDetails.isValid) {
+          return;
+        }
+
+        data = {
+          name: projectDetails.name,
+          author: projectDetails.author,
+          description: projectDetails.description,
+          hasReactNavigation: rnDetails.hasReactNavigation,
+          hasRedux: rnDetails.hasRedux,
+        };
+        getRNScriptFile(data)
+          .then((mainFile) => {
+            downloadFile(mainFile);
+            setType(null);
+            setLoading(false);
+          })
+          .catch((err) => {
+            setLoading(false);
+          });
+        break;
+
+      default:
         setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-      });
+        break;
+    }
   };
 
-  const projectTypes = [{ key: 'express', text: 'Express', value: 'express' }];
-  const dbTypes = [
-    { key: 'none', text: 'None', value: 'none' },
-    { key: 'mongo', text: 'MongoDB', value: 'mongo' },
-  ];
+  const downloadFile = (file) => {
+    const tempFileName = generateRandomId(6);
+    setFileName(tempFileName);
+    const element = document.createElement('a');
+    element.href = window.URL.createObjectURL(new Blob([file]));
+    element.download = `${tempFileName}.js`;
+    document.body.appendChild(element);
+    element.click();
+  };
+
+  const onChangeProjectTypeHandler = (e, { value }) => {
+    setFileName(null);
+    setType(value);
+  };
 
   return (
     <div className="container">
@@ -100,96 +129,26 @@ function Home() {
             <Form.Select
               fluid
               label="Project Type"
-              options={projectTypes}
+              options={PROJECT_TYPES_ARRAY}
               value={type}
-              onChange={(e, { value }) => {
-                setType(value);
-              }}
+              onChange={onChangeProjectTypeHandler}
             />
-            <Form.Group widths="equal">
-              <Form.Input
-                fluid
-                label="Project Name"
-                placeholder="express-app"
-                value={name}
-                onChange={(e, { value }) => {
-                  setName(value);
-                }}
-                error={
-                  nameError
-                    ? {
-                        content: 'Please enter a project name',
-                        pointing: 'above',
-                      }
-                    : false
-                }
-              />
-              <Form.Input
-                fluid
-                label="Author"
-                placeholder="John Doe"
-                value={author}
-                onChange={(e, { value }) => {
-                  setAuthor(value);
-                }}
-                error={
-                  authorError
-                    ? {
-                        content: 'Please enter the author name',
-                        pointing: 'above',
-                      }
-                    : false
-                }
-              />
-            </Form.Group>
-            <Form.TextArea
-              label="Project Description"
-              placeholder="Add a brief description about your project"
-              value={description}
-              onChange={(e, { value }) => {
-                setDescription(value);
-              }}
-              error={
-                descriptionError
-                  ? {
-                      content: 'Please enter a description',
-                      pointing: 'above',
-                    }
-                  : false
-              }
-            />
-            <Form.Group widths="equal">
-              <Form.Select
-                fluid
-                label="Database"
-                options={dbTypes}
-                value={dbType}
-                onChange={(e, { value }) => {
-                  setDbType(value);
-                }}
-              />
-              <Form.Input
-                disabled={dbType === 'none'}
-                fluid
-                label="Database Name"
-                placeholder="express-app-db"
-                value={dbName}
-                onChange={(e, { value }) => {
-                  setDbName(value);
-                }}
-                error={
-                  dbNameError
-                    ? {
-                        content: 'Please enter the database name',
-                        pointing: 'above',
-                      }
-                    : false
-                }
-              />
-            </Form.Group>
-            <Form.Button className="my-3" primary>
-              Generate Project
-            </Form.Button>
+            {type && (
+              <>
+                <ProjectDetailsView
+                  projectType={type}
+                  onChange={setProjectDetails}
+                />
+                {type === PROJECT_TYPES.EXPRESS ? (
+                  <ExpressView onChange={setExpressDetails} />
+                ) : (
+                  <RNView onChange={setRNDetails} />
+                )}
+                <Form.Button className="my-3" primary>
+                  Generate Project
+                </Form.Button>
+              </>
+            )}
           </Form>
           {fileName && (
             <>
