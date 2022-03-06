@@ -1,21 +1,14 @@
 import React, { useState } from 'react';
 import './index.css';
 import logo from '../../assets/images/logo.svg';
-import {
-  Header,
-  Container,
-  Button,
-  Form,
-  Segment,
-  Icon,
-  Popup,
-} from 'semantic-ui-react';
+import { Header, Container, Form } from 'semantic-ui-react';
 import { generateRandomId } from '../../utils';
 import { PROJECT_TYPES, PROJECT_TYPES_ARRAY } from './constants';
 import ProjectDetailsView from './views/ProjectDetailsView';
 import ExpressView from './views/ExpressView';
 import RNView from './views/RNView';
 import { getExpressScriptFile, getRNScriptFile } from '../../services';
+import { SetupView } from './views/SetupView';
 
 function Home() {
   const [type, setType] = useState(null);
@@ -38,6 +31,7 @@ function Home() {
     isValid: false,
     hasReactNavigation: false,
     hasRedux: false,
+    hasVectorIcons: false,
   });
 
   const [fileName, setFileName] = useState(null);
@@ -56,9 +50,7 @@ function Home() {
         }
 
         data = {
-          name: projectDetails.name,
-          author: projectDetails.author,
-          description: projectDetails.description,
+          ...projectDetails,
           dbType: expressDetails.dataBaseType,
           dbName: expressDetails.dataBaseName,
         };
@@ -79,11 +71,8 @@ function Home() {
         }
 
         data = {
-          name: projectDetails.name,
-          author: projectDetails.author,
-          description: projectDetails.description,
-          hasReactNavigation: rnDetails.hasReactNavigation,
-          hasRedux: rnDetails.hasRedux,
+          ...projectDetails,
+          ...rnDetails,
         };
         getRNScriptFile(data)
           .then((mainFile) => {
@@ -122,10 +111,20 @@ function Home() {
       <header className="header">
         <Header as="h2" image={logo} content="JS Project Wizard" />
       </header>
-      <div className="left-content"></div>
+
       <main className="content">
         <Container>
-          <Form onSubmit={buttonClickHandler} loading={isLoading}>
+          <SetupView
+            heading={
+              'If you are here the first time, run the following command before getting started to install the dependencies'
+            }
+            code={'npm install --prefix $HOME async'}
+          />
+          <Form
+            onSubmit={buttonClickHandler}
+            loading={isLoading}
+            className="mt-10"
+          >
             <Form.Select
               fluid
               label="Project Type"
@@ -151,37 +150,12 @@ function Home() {
             )}
           </Form>
           {fileName && (
-            <>
-              <Header as="h5" color={'green'}>
-                Generation complete. Create a new folder, move the downloaded
-                file into the folder and run the following command on a terminal
-                inside of that folder
-              </Header>
-
-              <Segment
-                className="flex justify-between items-center mt-3 font-mono"
-                inverted
-              >
-                npm i async && node {fileName}.js
-                <Popup
-                  content="Copied!"
-                  on="click"
-                  pinned
-                  trigger={
-                    <Button
-                      onClick={() => {
-                        navigator.clipboard.writeText(
-                          `npm i async && node ${fileName}.js`
-                        );
-                      }}
-                      icon
-                    >
-                      <Icon name="copy" />
-                    </Button>
-                  }
-                />
-              </Segment>
-            </>
+            <SetupView
+              heading={
+                'Generation complete. Move the downloaded file into where you want to initialize the project and run the following command.'
+              }
+              code={`node ${fileName}.js`}
+            />
           )}
         </Container>
       </main>
