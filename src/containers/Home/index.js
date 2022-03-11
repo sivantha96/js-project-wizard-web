@@ -123,7 +123,7 @@ function Home() {
           <Form
             onSubmit={buttonClickHandler}
             loading={isLoading}
-            className="mt-10"
+            className="my-10"
           >
             <Form.Select
               fluid
