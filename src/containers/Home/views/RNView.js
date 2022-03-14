@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-target-blank */
 import React, { useState, useEffect, memo } from 'react';
 import { Checkbox, Form, Icon, Popup } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
@@ -6,18 +7,23 @@ const RNView = ({ onChange }) => {
   const [hasReactNavigation, setHasReactNavigation] = useState(false);
   const [hasRedux, setHasRedux] = useState(false);
   const [hasVectorIcons, setHasVectorIcons] = useState(false);
+  const [hasTheming, setHasTheming] = useState(false);
 
   useEffect(() => {
     onChange({
-      isValid: true,
+      isValid: hasReactNavigation || hasRedux || hasVectorIcons,
       hasReactNavigation,
       hasRedux,
       hasVectorIcons,
+      hasTheming,
     });
-  }, [onChange, hasVectorIcons, hasReactNavigation, hasRedux]);
+  }, [onChange, hasTheming, hasVectorIcons, hasReactNavigation, hasRedux]);
 
   return (
-    <div>
+    <div className="mt-10 mb-5">
+      <Form.Field className="text-xl ">
+        <label>Select at least one feature from below to be included in your project</label>
+      </Form.Field>
       <div className="grid grid-cols-2">
         <Form.Field>
           <label>
@@ -116,6 +122,30 @@ const RNView = ({ onChange }) => {
           checked={hasVectorIcons}
           onChange={(e, { checked }) => {
             setHasVectorIcons(checked);
+          }}
+        />
+      </div>
+
+      <div className="grid grid-cols-2">
+        <Form.Field>
+          <label>
+            {'Theming   '}
+            <Popup
+              on="click"
+              content={
+                <span>
+                  This will include the folder structure for clean theming
+                </span>
+              }
+              trigger={<Icon className="cursor-pointer" name="info circle" />}
+            />
+          </label>
+        </Form.Field>
+        <Checkbox
+          toggle
+          checked={hasTheming}
+          onChange={(e, { checked }) => {
+            setHasTheming(checked);
           }}
         />
       </div>

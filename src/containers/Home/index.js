@@ -32,6 +32,7 @@ function Home() {
     hasReactNavigation: false,
     hasRedux: false,
     hasVectorIcons: false,
+    hasTheming: false,
   });
 
   const [fileName, setFileName] = useState(null);
@@ -143,7 +144,15 @@ function Home() {
                 ) : (
                   <RNView onChange={setRNDetails} />
                 )}
-                <Form.Button className="my-3" primary>
+                <Form.Button
+                  className="my-3"
+                  primary
+                  disabled={
+                    type === PROJECT_TYPES.EXPRESS
+                      ? !projectDetails.isValid || !expressDetails.isValid
+                      : !projectDetails.isValid || !rnDetails.isValid
+                  }
+                >
                   Generate Project
                 </Form.Button>
               </>
